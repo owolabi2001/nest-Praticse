@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Query } from '@nestjs/common';
+import { Body, Controller, Post, Query, ValidationPipe } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { StudentService } from 'src/student/student.service';
 import { CourseDto } from './dto/course.dto';
@@ -11,7 +11,7 @@ export class CourseController {
     ) {}
 
     @Post("addCourse")
-    addCourse(@Body() courseDto:CourseDto){
+    addCourse(@Body(new ValidationPipe()) courseDto:CourseDto){
       return this.courseService.addCourse(courseDto);
     }
 
