@@ -12,6 +12,7 @@ export class CourseController {
 
     @Post("addCourse")
     addCourse(@Body(new ValidationPipe()) courseDto:CourseDto){
+      console.log("This is to confirm validation");
       return this.courseService.addCourse(courseDto);
     }
 

@@ -24,7 +24,7 @@ export class CourseService {
 
     async addCourse(courseDto:CourseDto){
         const checkCourse = await this.courseRepository.findOneBy({courseCode:courseDto.courseCode});
-
+        console.log("checking if it is gets to the add course method")
         if(checkCourse){
             return genericResponse(
                 "11",

@@ -6,6 +6,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Student } from './student/student.entity';
 import { Course } from './course/course.entity';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 @Module({
 
 
@@ -24,8 +26,11 @@ import { Course } from './course/course.entity';
       password: "password",   
       database: "studentDB",
       // entities: [Student,Course],
+      synchronize:true,
       autoLoadEntities: true
-    })]
+    }),
+    AuthModule,
+    UserModule]
 })
 export class AppModule {
   constructor(private configService: ConfigService){}
