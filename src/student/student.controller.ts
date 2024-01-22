@@ -9,6 +9,7 @@ import { studentValidationSchema } from './dto/validationPipe/validation.schema'
 import { userDto } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthGuard } from 'src/auth/guards';
+import { Public } from 'src/auth/custom decoretors';
 
 
 @Controller('student')
@@ -18,7 +19,7 @@ export class StudentController {
     private readonly userService: UserService
   ) { }
 
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @Post("addStudent")
   @UsePipes(new ZodValidationPipe(studentValidationSchema))
   addStudent(@Body() student: StudentInfo) {
@@ -26,9 +27,11 @@ export class StudentController {
     return this.studentService.addStudent(student);
   }
 
+  @Public()
   @Post("user/add")
   addUser(@Body(new ValidationPipe()) user: userDto) {
     return this.userService.adduser(user);
+
   }
 
   @HttpCode(HttpStatus.ACCEPTED)

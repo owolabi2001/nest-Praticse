@@ -1,5 +1,5 @@
 import { IsEmail, IsString } from "class-validator";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class User{
@@ -14,4 +14,7 @@ export class User{
     @Column()
     @IsString()
     password:string
+    
+    @UpdateDateColumn()
+    dateCreated:string;
 }
