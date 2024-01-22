@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { StudentInfo } from './dto/Student.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from './student.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { genericResponse } from 'src/generic.response';
 import { Course } from 'src/course/course.entity';
 import { CourseService } from 'src/course/course.service';
@@ -15,7 +15,8 @@ export class StudentService {
     private studentRepository:Repository<Student>,
     @InjectRepository(Course)
     private courseRepository:Repository<Course>,
-    private courseService:CourseService
+    private courseService:CourseService,
+    private dataSource: DataSource
   ){}
 
   async addStudent(studentInfo: StudentInfo){
@@ -43,6 +44,50 @@ export class StudentService {
   
   }
 
+  async addStudentUsingQueryRunner(studentInfo: StudentInfo) {
+    const checkStudent1 = await
+      this
+        .dataSource
+        .getRepository(Student)
+        .createQueryBuilder("student")
+        .where("student.matricNumber= :matricNumber")
+        .setParameter("matricNumber", studentInfo.matricNumber).getOne();
+    console.log(checkStudent1)
+
+    if (checkStudent1) {
+      return genericResponse(
+        "11",
+        `student with the matric number ${studentInfo.matricNumber} already exist`,
+        null, null
+      )
+    }
+
+    const newStudent = await
+      this
+        .dataSource
+        .createQueryBuilder()
+        .insert().into(Student)
+        .values([{
+          firstName: studentInfo.firstName,
+          lastName: studentInfo.lastName,
+          matricNumber: studentInfo.matricNumber,
+          department: studentInfo.department
+        }])
+        // .orUpdate(
+        //   ["firstName", "lastName", "department"],
+        //   // {
+        //   //   skipUpdateIfNoValuesChanged: true,
+        //   // }
+
+        // )
+        .execute();
+
+    return genericResponse(
+      "00",
+      "Student Added",
+      newStudent);
+  }
+
   addStudents(students: StudentInfo[]) { 
     const studentAdded:StudentInfo[] = []; 
     const existedStudent:StudentInfo[]= [];
@@ -62,6 +107,20 @@ export class StudentService {
   async findAllStudent():Promise<Student[]>{
     console.log("API to find all student");
     return await this.studentRepository.find();
+  }
+
+  async findStudentUsingQueryBuilder(matricNumber:string):Promise<Student>{
+    
+    console.log("-------------->API to get Student by Matric");
+    console.log(`Matric number ${matricNumber}`)
+    return await this
+      .dataSource.getRepository(Student)
+      .createQueryBuilder("student")
+      .where("student.matricNumber=:matricNumber",{matricNumber})
+      // .where("student.matricNumber = :matricNumber")
+      // .setParameter("matricNumber", matricNumber)
+      .getOne();
+
   }
 
   async findStudentByMatric(matricNumber: string){

@@ -12,6 +12,7 @@ import { AuthGuard } from 'src/auth/guards';
 import { Public } from 'src/auth/custom decoretors';
 
 
+@Public()
 @Controller('student')
 export class StudentController {
   constructor(
@@ -24,10 +25,11 @@ export class StudentController {
   @UsePipes(new ZodValidationPipe(studentValidationSchema))
   addStudent(@Body() student: StudentInfo) {
     console.log("API to add student");
-    return this.studentService.addStudent(student);
+    // return this.studentService.addStudent(student);
+    return this.studentService.addStudentUsingQueryRunner(student);
   }
 
-  @Public()
+  
   @Post("user/add")
   addUser(@Body(new ValidationPipe()) user: userDto) {
     return this.userService.adduser(user);
@@ -60,6 +62,13 @@ export class StudentController {
   @Get("findAll")
   findAllStudent() {
     return this.studentService.findAllStudent();
+  }
+
+  @Public()
+  @Get("findStudent/:matricNumber")
+  findStudentByMatricNumber(@Param("matricNumber") matricNumber:string){
+    return this.studentService.findStudentUsingQueryBuilder(matricNumber);
+
   }
 
   @Delete("/delete")
