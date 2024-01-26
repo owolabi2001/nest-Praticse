@@ -10,9 +10,11 @@ import { userDto } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthGuard } from 'src/auth/guards';
 import { Public } from 'src/auth/custom decoretors';
+import { GetUser } from './custom decorators';
+import { User } from 'src/user/user.entity';
 
 
-@Public()
+// @Public()
 @Controller('student')
 export class StudentController {
   constructor(
@@ -29,7 +31,7 @@ export class StudentController {
     return this.studentService.addStudentUsingQueryRunner(student);
   }
 
-  
+  @Public()
   @Post("user/add")
   addUser(@Body(new ValidationPipe()) user: userDto) {
     return this.userService.adduser(user);
@@ -80,7 +82,7 @@ export class StudentController {
   enrollStudentForCourse(
     @Query("matricNumber") matricNumber: string,
     @Body() courses: courseCode[]
-  ) {
+  ){
     return this.studentService.enrollStudentForCourse(courses, matricNumber)
   }
 
@@ -116,7 +118,12 @@ export class StudentController {
 
       message: `nice one you are calling a ${id} and validating with pipe`
     }
+  }
 
+  @Get('getCurrentUser')
+  async getUser(@GetUser() user:User){
+    console.log("API to get current User");
+    return user;
   }
 
 }
